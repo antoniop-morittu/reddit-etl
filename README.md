@@ -49,6 +49,18 @@ Example:
 }
 
 ```
+Command to create keys.json
+```bash
+mkdir ./credentials && \
+    echo '{ \
+    "reddit": { \
+    "USER_KEY": "", \
+    "SECRET_KEY": "", \
+    "PSW": "", \
+    "USERNAME": "" \
+    } \
+    }' > ./credentials/keys-template.json
+```
 
 # Docker
 
@@ -69,8 +81,8 @@ docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v /path/to/loc
 
 ./app
 |____output         # Volume to desidered directory where store csv                         -v /path/to/local/output:/app/output
-|____dags           # Volume where put and modify dags                          [optional]    -v /path/to/local/dags:/opt/airflow/dags
-|____credentials    # Volume to folder where are stored credentials in keys.json       -v /path/to/local/credentials:/app/credentials
+|____dags           # Volume where put and modify dags                          [optional]  -v /path/to/local/dags:/opt/airflow/dags
+|____credentials    # Volume to folder where are stored credentials in keys.json            -v /path/to/local/credentials:/app/credentials
 | |____keys.json
 |____setup.sh       # Script that activate airflow standalone when container start
 |____src            # Package with Reddit API tools
@@ -83,15 +95,13 @@ docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v /path/to/loc
 
 ### Docker run examples
 
-docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v -d airflow-reddit
-
 ## Standard
 
 ```bash
 docker run \
 -p 8080:8080 \
--v /path/to/local/credentials:/app/credentials \
--v /path/to/local//output:/app/output \
+-v $(pwd)/credentials:/app/credentials \
+-v $(pwd)/output:/app/output \
 -d airflow-reddit
 ```
 
@@ -100,9 +110,9 @@ docker run \
 ```bash
 docker run \
 -p 8080:8080 \
--v /path/to/local/dags:/opt/airflow/dags \ 
--v /path/to/local/credentials:/app/credentials \ 
--v /path/to/local/output:/app/output \
+-v $(pwd)/dags:/opt/airflow/dags \ 
+-v $(pwd)/credentials:/app/credentials \ 
+-v $(pwd)/output:/app/output \
 -d airflow-reddit
 ```
 
