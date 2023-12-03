@@ -50,7 +50,6 @@ Example:
 
 ```
 
-
 # Docker
 
 - WORKDIR : `/app`
@@ -84,21 +83,26 @@ docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v /path/to/loc
 
 ### Docker run examples
 
-docker run -p 8080:8080 -v /c/local/clone/path/airflow-examples/dags:/opt/airflow/dags -v -d airflow-local
+docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v -d airflow-reddit
 
 ## Standard
+
+```bash
 docker run \
 -p 8080:8080 \
--v /mnt/c/Users/kp8antmorrit/Desktop/etl-twitter/credentials:/app/credentials \
--v /mnt/c/Users/kp8antmorrit/Desktop/etl-twitter/output:/app/output \
+-v /path/to/local/credentials:/app/credentials \
+-v /path/to/local//output:/app/output \
 -d airflow-reddit
+```
 
 ## Standard + Dags volume
+
+```bash
 docker run \
 -p 8080:8080 \
--v /mnt/c/Users/kp8antmorrit/Desktop/etl-twitter/dags:/opt/airflow/dags \ 
--v /mnt/c/Users/kp8antmorrit/Desktop/etl-twitter/credentials:/app/credentials \ 
--v /mnt/c/Users/kp8antmorrit/Desktop/etl-twitter/output:/app/output \
+-v /path/to/local/dags:/opt/airflow/dags \ 
+-v /path/to/local/credentials:/app/credentials \ 
+-v /path/to/local/output:/app/output \
 -d airflow-reddit
-
+```
 
