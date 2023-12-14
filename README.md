@@ -3,32 +3,61 @@
 
 This app use the Reddit API in order to get list of posts.
 
-Trough Airflow is possible to use the relate script's Reddit API with the relate DAG
+It uses the opensource software Airflow, that allows to create DAGs that have the objective to collect data during a period of time.
 
 # Structure 
 
 ```bash
 .
-|____.dockerignore
-|____credentials
-| |____keys.json
-|____dags
-|____Dockerfile
-|____main.py
-|____output
-|____README.md
-|____requirements.txt
-|____setup.sh
-|____src
-| |____reddit_dag.py
-| |____reddit_etl.py
-| |______init__.py
+├── config                          
+│   └── credentials                     <- To use the Reddit API,  
+│       └── keys.json                       credentials needs to be store as keys.json
+├── dags
+│   ├── custom                          <- Custom tools, etc. used in the DAG
+│   │   ├── api.py 
+│   │   ├── cli.py
+│   │   ├── debug.py
+│   │   ├── decorator.py
+│   │   ├── etl.py
+│   │   ├── __init__.py
+│   │   └── tools.py
+│   └── reddit_dag.py
+├── data
+├── docker
+│   ├── airflow-data                    <- Docker Base Image for Airflow
+│   │   ├── Dockerfile
+│   │   └── requirements.txt
+│   └── airflow-standalone
+│       ├── Dockerfile
+│       ├── requirements.txt
+│       └── setup.sh
+├── docker-compose.yaml                
+├── LICENSE
+├── logs                           
+├── main.py                             <- Script for CLI test
+├── Makefile                            <- Makefile to install, test, lint and format
+├── package                             
+│   └── reddit-api                      <- Code same as custom directory built as Python package
+│       ├── setup.py
+│       └── src
+│           └── reddit_api
+│               ├── api.py
+│               ├── cli.py
+│               ├── debug.py
+│               ├── decorator.py
+│               ├── etl.py
+│               ├── __init__.py
+│               └── tools.py
+├── README.md                           <- This file
+└── requirements-dev.txt                <- Requirements for developer purpose
+
 ```
 
-- main.py : Script that help try the Reddit API
-- src/
-    - reddit_etl.py : Script that contain method and function to get Posts from reddit
+- main.py : Script to try out package reddit-api by command line
+- dags/
+    - custom : Script that contain tools, method and function to get posts from reddit
     - reddit_dag.py : Airflow's DAG script
+- data/, logs/, config/credentials/ -> this directory are used as shared volumes when docker-compose up
 
 ## Credentials
 
@@ -51,7 +80,7 @@ Example:
 ```
 Command to create keys.json
 ```bash
-mkdir ./credentials && \
+mkdir ./config/credentials && \
     echo '{ \
     "reddit": { \
     "USER_KEY": "", \
@@ -59,38 +88,49 @@ mkdir ./credentials && \
     "PSW": "", \
     "USERNAME": "" \
     } \
-    }' > ./credentials/keys-template.json
+    }' > ./config/credentials/keys-template.json
 ```
 
-# Docker
+# Usage
 
-- WORKDIR : `/app`
-- Build Docker Image: `docker build . -t airflow-reddit`
+To get started with the code examples, start Airflow in docker using the following command:
 
-## Structure 
+```
+docker-compose up -d --build
+```
+
+Wait for a few seconds and you should be able to access the examples at http://localhost:8080/.
+
+To stop running the examples, run the following command:
+
+```
+docker-compose down
+```
+
+## Docker Image airflow-standalone Structure 
 
 ### Before run the docker instance
 
-*by default the reddit_dag.py is moved into the airflow dags folder, if it is needs create the volume to `:/opt/airflow/dags`*
+*in order to modify dag meanwhile the container is up is suggested to create a shared volume`:/opt/airflow/dags`*
 
 ```bash
 
 docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v /path/to/local/output:/app/output -v /path/to/local/credentials:/app/credentials -d airflow-reddit
 
-# /app - Directory Tree Example
+# /opt/airflow - Directory Tree Example
 
-./app
-|____output         # Volume to desidered directory where store csv                         -v /path/to/local/output:/app/output
-|____dags           # Volume where put and modify dags                          [optional]  -v /path/to/local/dags:/opt/airflow/dags
-|____credentials    # Volume to folder where are stored credentials in keys.json            -v /path/to/local/credentials:/app/credentials
-| |____keys.json
-|____setup.sh       # Script that activate airflow standalone when container start
-|____src            # Package with Reddit API tools
-| |____reddit_etl.py
-| |______init__.py
-|____main.py        # Script to try out without the use of Airflow
-|____README.md
-|____requirements.txt
+./
+├── data                # Volume to desidered directory where store csv                   -v /path/to/local/output:/app/output
+├── logs                # Volume where put and modify dags                                -v /path/to/local/dags:/opt/airflow/dags
+├── credentials         # Volume to folder where are stored credentials in keys.json      -v /path/to/local/credentials:/credentials/
+│   └── keys.json
+├── dags
+│   └── reddit_dag.py   # ETL Dag to collect posts 
+│   └── custom          # Package with Reddit API tools
+│       └── api.py
+|            ... 
+├── requirements.txt
+└── setup.sh            # Script that activate airflow standalone when container start
 ```
 
 ### Docker run examples
@@ -100,19 +140,18 @@ docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v /path/to/loc
 ```bash
 docker run \
 -p 8080:8080 \
--v $(pwd)/credentials:/app/credentials \
--v $(pwd)/output:/app/output \
+-v $(pwd)/credentials:/credentials \
 -d airflow-reddit
 ```
 
-## Standard + Dags volume
+## Standard with volume
 
 ```bash
 docker run \
 -p 8080:8080 \
--v $(pwd)/dags:/opt/airflow/dags \ 
--v $(pwd)/credentials:/app/credentials \ 
--v $(pwd)/output:/app/output \
+-v $(pwd)/dags:/opt/airflow/dags:z \
+-v $(pwd)/config/credentials:/opt/airflow/credentials:z \
+-v $(pwd)/data:/opt/airflow/data:z \
 -d airflow-reddit
 ```
 

@@ -1,3 +1,6 @@
 apache-airflow==2.7.3
 pandas==2.0.3
 praw==7.7.1
+setuptools==69.0.2
+yake==0.4.8
+pyarrow==14.0.1

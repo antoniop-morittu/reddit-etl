@@ -1,4 +1,11 @@
-credentials
-dags
-output
-src/__pycache__
+
+# FILEPATH: /home/antonio/Projects/reddit-etl/.gitignore
+# BEGIN: abpxx6d04wxr
+config/
+data/
+logs/
+*.pyc
+*.egg-info
+__pycache__/
+.vscode
+# END: abpxx6d04wxr
