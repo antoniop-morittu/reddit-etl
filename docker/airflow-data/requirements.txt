@@ -3,3 +3,4 @@ praw==7.7.1
 setuptools==69.0.2
 yake==0.4.8
 pyarrow==14.0.1
+colorlog==4.8.0
