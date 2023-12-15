@@ -1,4 +1,3 @@
-
 # Introduction
 
 This app use the Reddit API in order to get list of posts.
