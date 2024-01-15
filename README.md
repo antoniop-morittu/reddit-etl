@@ -131,26 +131,3 @@ docker run -p 8080:8080 -v /path/to/local/dags:/opt/airflow/dags -v /path/to/loc
 ├── requirements.txt
 └── setup.sh            # Script that activate airflow standalone when container start
 ```
-
-### Docker run examples
-
-## Standard
-
-```bash
-docker run \
--p 8080:8080 \
--v $(pwd)/credentials:/credentials \
--d airflow-reddit
-```
-
-## Standard with volume
-
-```bash
-docker run \
--p 8080:8080 \
--v $(pwd)/dags:/opt/airflow/dags:z \
--v $(pwd)/config/credentials:/opt/airflow/credentials:z \
--v $(pwd)/data:/opt/airflow/data:z \
--d airflow-reddit
-```
-
